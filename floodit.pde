@@ -134,9 +134,9 @@ boolean checkNeighbor(xpos, ypos) {
 
 void draw() {
   fill(225);
-  rect(0, 370, 100, 80);
+  rect(0, 370, 120, 80);
   fill(30);
-  text("Turns: " + turns, 20, 400);  
+  text("Turns left: " + (23 - turns), 20, 400);  
 }
 
 void checkEndGame(int turns) {
@@ -145,4 +145,3 @@ void checkEndGame(int turns) {
     setup();
   }
 }
-
