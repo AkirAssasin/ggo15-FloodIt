@@ -76,12 +76,24 @@ void mousePressed() {
   // Boolean flag of top left box is always true
   // in other words, it's the root of the tree
   
+  
+  /* Here we are looping through the 2-dimensional array of color values 
+     called cArray */
   for(xpos = 0; xpos < cArray.length; xpos++) {
     for(ypos = 0; ypos < cArray.length; ypos++) {
+      /* If we are at cArray[0][0] (top left square, don't do anything 
+         because sArray, the corresponding array of booleans, is already
+         true at this index from initialization */ 
       if ((xpos == 0) && (ypos == 0)) {
       }
+      /* Now check to see if the color value at the current index does NOT
+         match the value of target and if so don't do anything */
       else if(cArray[xpos][ypos] != target) {
       }
+      /* If color value at index DOES match target (fallthrough condition from 
+         conditional above, run CheckNeighbor function below. If CheckNeighbor
+         evaluates to true, update the cell to the current color f (the color
+         that was clicked on) and it's boolean value to true. */
       else if(checkNeighbor(xpos, ypos) == true) {
           cArray[xpos][ypos] = f;
           sArray[xpos][ypos] = true;
@@ -110,6 +122,10 @@ void mousePressed() {
   checkEndGame(turns);
 }
 
+/* CheckkNeighbor checks to see if any of a cell's 4 adjacent neighbors have 
+   a value of true. A neighbor must have a value of true for the cell to change
+   color, since the color must be connected to the tree of cells that are connected
+   to the root (the upper left cell). */
 boolean checkNeighbor(xpos, ypos) {
   if( (xpos > 0) && (sArray[xpos - 1][ypos]) == true) {
     return true;
