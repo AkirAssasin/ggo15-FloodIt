@@ -12,6 +12,8 @@ int[] sShake;        // screenshake on cutscene. [0] determines X direction, [1]
 int gameState;       // a variable to keep track of states. 0 = initial main menu, 1 = game, 2 = main menu
 int highScore;       // we obtain this from a stored value with jStorage
 int score;
+int step;
+
 
 // Color assignments
 color C1 = color(255);
@@ -33,8 +35,6 @@ void setup() {
   color c;
   
   noCursor();
-  textSize(14);
-  // Set the text size once for the draw loop
     
   colors = {C1, C2, C3, C4, C5, C6};
   cArray = new int[6][6];
@@ -44,6 +44,7 @@ void setup() {
 
 void mousePressed() {
   if (gameState == 0 || gameState == 2) {
+    step = round(18);
     for(i = 0; i < cArray.length; i++) {
       for(j = 0; j < cArray[i].length; j++) {
         b = int(random(6));
@@ -60,12 +61,16 @@ void mousePressed() {
   }
   
   if (gameState == 1) {
+    
     fingerPress = 30;
-  
+    
     if (cutscene >= 0 && mouseX.between(95,245) && mouseY.between(95,245)) {
       color c, f;   
       
+      step -= 1;  
+        
       f = get(mouseX, mouseY);
+      if (f == cArray[0][0]) {step += 1;}
       
       int xpos = 0;
       int ypos = 0;
@@ -141,6 +146,7 @@ void draw() {
   }
     
   if (gameState == 1) {
+    textSize(14);
     background(225);
     stroke(30);
     strokeWeight(1);
@@ -156,6 +162,11 @@ void draw() {
       rect(90,90,160,160);
       rect(165,0,10,400);
       rect(0,395,340,10);
+      rect(100,60,140,30);  
+      fill(255);
+      rect(105,65,130,20);  
+      fill(30);
+      text(step,165,82);
       for(i = 0; i < cArray.length; i++) {
         for(j = 0; j < cArray[i].length; j++) {
           n = cArray[i][j];
@@ -220,6 +231,7 @@ void checkEndGame() {
   if (allCheck >= 36) {
     lastColor = cArray[0][0];
     score += 1;
+    step = round(18);
     cutscene = 300;
     sShake[0] = 0;
     sShake[1] = 0;
@@ -234,6 +246,10 @@ void checkEndGame() {
       }
     }
     sArray[0][0] = true; 
+  }
+  if(step <= 0 && allCheck < 36) {
+    if (score > highScore) {highScore = score;}
+    gameState = 2;
   }
 }
 
@@ -309,15 +325,15 @@ void cutsceneAnim() {
   
   if (cutscene <= 200) {
     
-    if (sShake[0] == 0) {sShake[1] -= 1};
-    if (sShake[1] < -10 && sShake[0] == 0) {sShake[0] = 1};
-    if (sShake[0] == 1) {sShake[1] += 1};
-    if (sShake[1] > 10 && sShake[0] == 1) {sShake[0] = 0};  
+    if (sShake[0] == 0) {sShake[1] -= 0.9};
+    if (sShake[1] < -11.1 && sShake[0] == 0) {sShake[0] = 1};
+    if (sShake[0] == 1) {sShake[1] += 0.9};
+    if (sShake[1] > 11.1 && sShake[0] == 1) {sShake[0] = 0};  
       
     if (sShake[2] == 0) {sShake[3] -= 1};
-    if (sShake[3] < 0 && sShake[2] == 0) {sShake[2] = 1};
+    if (sShake[3] <= 0 && sShake[2] == 0) {sShake[2] = 1};
     if (sShake[2] == 1) {sShake[3] += 1};
-    if (sShake[3] > 10 && sShake[2] == 1) {sShake[2] = 0};  
+    if (sShake[3] > 11 && sShake[2] == 1) {sShake[2] = 0};  
       
     fill(225);
     stroke(30);
@@ -346,6 +362,13 @@ void cutsceneAnim() {
     strokeWeight(1);
     fill(30);
     rect(90 + 80*(cutscene/200) + sShake[1],90 + 80*(cutscene/200) + sShake[3],160 - 160*(cutscene/200),160 - 160*(cutscene/200));
+    rect(100 + 70*(cutscene/200) + sShake[1],60 + 110*(cutscene/200) + sShake[3],140 - 140*(cutscene/200),30 - 30*(cutscene/200));  
+    fill(255);
+    rect(105 + 65*(cutscene/200) + sShake[1],65 + 105*(cutscene/200) + sShake[3],130 - 130*(cutscene/200),20 - 20*(cutscene/200));
+    textSize(14 - 13*(cutscene/200));
+    fill(30);
+    text(step,165 + 5*(cutscene/200) + sShake[1],82 + 88*(cutscene/200) + sShake[3]);
+    textSize(14);
     
     for(i = 0; i < cArray.length; i++) {
       for(j = 0; j < cArray[i].length; j++) {

@@ -1,6 +1,6 @@
-FloodIt-Processingjs
+Floodgate Dungeon
 ====================
 
 A Flood-Fill Game Coded in the Processing JS Library
 
-Live Demo: http://chris0.github.io/FloodIt-Processingjs/
+Live Demo: http://akirassasin.github.io/ggo15-FloodIt/
