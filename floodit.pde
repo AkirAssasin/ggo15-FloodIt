@@ -149,10 +149,10 @@ void draw() {
     fX = mouseX;
     fY = mouseY;
   } else {
-    if (fX > mouseX) {fX -= 20*(waterLevel/420);}
-    if (fX < mouseX) {fX += 20*(waterLevel/420);}
-    if (fY > mouseY) {fY -= 20*(waterLevel/420);}
-    if (fY < mouseY) {fY += 20*(waterLevel/420);}
+    if (fX > mouseX) {fX -= 10 - 9*(waterLevel/420);}
+    if (fX < mouseX) {fX += 10 - 9*(waterLevel/420);}
+    if (fY > mouseY) {fY -= 10 - 9*(waterLevel/420);}
+    if (fY < mouseY) {fY += 10 - 9*(waterLevel/420);}
   }
     
   if (gameState == 0 || gameState == 2) {
