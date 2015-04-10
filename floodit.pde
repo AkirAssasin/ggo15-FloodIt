@@ -1,4 +1,3 @@
-//FloodIt Project
 color[] colors;      // 1D array of 6 colors
 color[][] cArray;    // 2D array of colors
 boolean[][] sArray;  // 2D array of true/false switches
@@ -14,9 +13,9 @@ int highScore;       // we obtain this from a stored value with jStorage
 int score;
 int step;
 int doorMode;
-int waterLevel;
-int fX;
-int fY;
+int tutLevel;
+
+ArrayList pcles;
 
 // Color assignments
 color C1 = color(255);
@@ -36,6 +35,8 @@ Number.prototype.between = function (min, max) {
 void setup() {
   size(340, 420);
   
+  pcles = new ArrayList();
+    
   int b, i, j;
   color c;
   
@@ -47,34 +48,98 @@ void setup() {
 }  
 
 void mousePressed() {
-  if (fingerPress <= 0) {
   if (gameState == 0 || gameState == 2) {
-    switchMode();
-    for(i = 0; i < cArray.length; i++) {
-      for(j = 0; j < cArray[i].length; j++) {
-        b = int(random(6));
-        c = colors[b];
-        cArray[i][j] = c;
-        sArray[i][j] = false;
+    if (mouseX.between(130,205) && mouseY.between(185,215)){
+      switchMode();
+      for(i = 0; i < cArray.length; i++) {
+        for(j = 0; j < cArray[i].length; j++) {
+          b = int(random(6));
+          c = colors[b];
+          cArray[i][j] = c;
+          sArray[i][j] = false;
+        }
+      }
+      gameState = 1;
+      score = 0;
+      // set just the top left block to 'true'
+      sArray[0][0] = true;
+    }
+    
+    if (mouseX.between(130,205) && mouseY.between(255,285)){
+      C1 = color(255);
+      C2 = color(204);
+      C3 = color(153);
+      C4 = color(102);
+      C5 = color(51);
+      for(i = 0; i < cArray.length; i++) {
+        for(j = 0; j < cArray[i].length; j++) {
+          b = int(random(6));
+          c = colors[b];
+          cArray[i][j] = c;
+          sArray[i][j] = false;
+        }
+      }
+      // set just the top left block to 'true'
+      sArray[0][0] = true;
+      tutLevel = 0;
+      gameState = 3;
+    }
+  }
+  if (gameState == 3) {
+    if (mouseX.between(130,205) && mouseY.between(375,450) && tutLevel == 1){gameState = 0;}
+    fingerPress = 30;
+    if (tutLevel == 0 && mouseX.between(95,245) && mouseY.between(95,245)) {
+      color c, f;   
+        
+      f = get(mouseX, mouseY);
+        
+      int xpos = 0;
+      int ypos = 0;
+      int target = cArray[0][0];
+    
+      cArray[0][0] = f;      
+      // always set the top left box to the new color c
+      sArray[0][0] = true;
+      // Boolean flag of top left box is always true
+      // in other words, it's the root of the tree
+      
+      
+      /* Here we are looping through the 2-dimensional array of color values 
+         called cArray */
+      for(xpos = 0; xpos < cArray.length; xpos++) {
+        for(ypos = 0; ypos < cArray.length; ypos++) {
+          /* If we are at cArray[0][0] (top left square, don't do anything 
+             because sArray, the corresponding array of booleans, is already
+             true at this index from initialization */ 
+          if ((xpos == 0) && (ypos == 0)) {
+          }
+          /* Now check to see if the color value at the current index does NOT
+             match the value of target and if so don't do anything */
+          else if(cArray[xpos][ypos] != target) {
+          }
+          /* If color value at index DOES match target (fallthrough condition from 
+             conditional above, run CheckNeighbor function below. If CheckNeighbor
+             evaluates to true, update the cell to the current color f (the color
+             that was clicked on) and it's boolean value to true. */
+          else if(checkNeighbor(xpos, ypos) == true) {
+              cArray[xpos][ypos] = f;
+              sArray[xpos][ypos] = true;
+          }
+        }
       }
     }
-    gameState = 1;
-    score = 0;
-    // set just the top left block to 'true'
-    sArray[0][0] = true;
   }
-  
   if (gameState == 1) {
     
     fingerPress = 30;
-    if (dist(fX,fY,53,395) < 40) {
+    if (dist(mouseX,mouseY,53,395) < 40) {
         step += round(hp/2);
         hp = 0;
     }
-    if (cutscene >= 0 && fX.between(95,245) && fY.between(95,245)) {
+    if (cutscene >= 0 && mouseX.between(95,245) && mouseY.between(95,245)) {
       color c, f;   
         
-      f = get(fX, fY);
+      f = get(mouseX, mouseY);
       
       if ((doorMode == 0 || doorMode == 1) && f != cArray[0][0]) {step -= 1;}
         
@@ -114,7 +179,6 @@ void mousePressed() {
       }
     }
   }
-  }
 }
 
 void keyPressed() {
@@ -145,47 +209,147 @@ boolean checkNeighbor(xpos, ypos) {
 }
 
 void draw() {
-  if (doorMode != 1) {
-    fX = mouseX;
-    fY = mouseY;
-  } else {
-    if (fX > mouseX) {fX -= 10 - 9*(waterLevel/420);}
-    if (fX < mouseX) {fX += 10 - 9*(waterLevel/420);}
-    if (fY > mouseY) {fY -= 10 - 9*(waterLevel/420);}
-    if (fY < mouseY) {fY += 10 - 9*(waterLevel/420);}
-  }
+  highScore = $.jStorage.get("fgHighScore", 0);
     
+  textSize(14);
+    
+  if (gameState == 3) {
+      background(225);
+      if (tutLevel == 0) {
+        fill(30);
+        textSize(35);
+        text("Floodgate Dungeon",15,30);
+        textSize(20);
+        text("How To Play",115,60);
+        textSize(15);
+        text("Click on a block.",115,270);
+        text("The top-left block with change into that color.",20,300);
+        text("All blocks connected to the top-left block will",20,315);
+        text("also change to that color.",85,330);
+        text("Turn all blocks to the same color to proceed.",20,345);
+        strokeWeight(1);
+        fill(0);
+        stroke(0);
+        rect(90,90,160,160);
+        for(i = 0; i < cArray.length; i++) {
+          for(j = 0; j < cArray[i].length; j++) {
+            n = cArray[i][j];
+            c = colors[n];
+            stroke(n);
+            fill(n);
+            rect(i*25+95, j*25+95, 25, 25);
+          }
+        }
+        int helpAllCheck = 0;
+        for(i = 0; i < cArray.length; i++) {
+          for(j = 0; j < cArray[i].length; j++) {
+            if (cArray[i][j] == cArray[0][0]) {
+              helpAllCheck += 1;
+            }
+          }
+        } 
+        if (helpAllCheck >= 36) {
+          tutLevel = 1;
+        }
+      }
+      
+      if (tutLevel == 1) {
+        fill(30);
+        textSize(35);
+        text("Floodgate Dungeon",15,30);
+        textSize(20);
+        text("How To Play",115,60);
+        textSize(15);
+        text("Not bad!",145,85);
+        text("Note that most doors have limited steps.",30,100);
+        text("Red doors has seconds before it explodes.",20,115);
+        text("Notice a device on your left hand.",55,160);
+        text("When you have excess steps it is turned",30,175);
+        text("into H4POINTS. H4POINTS can be used to",20,190);
+        text("add steps or time to unlock the door.",40,205);
+        text("press the circular button to use it.",50,220);
+        text("Yellow doors give x2 H4POINTS!",50,235);
+        fill(225);
+        translate(80,430 + fingerOffset);
+        strokeWeight(30);
+        stroke(150);
+        line(-100,-140,0,-150);
+        line(0,-95,30,-100);
+        stroke(0);
+        strokeWeight(5);
+        rotate(10/57.3);
+        rect(0,0,-100,-130);
+        stroke(30);
+        fill(30);
+        strokeWeight(1);
+        beginShape();
+          vertex(150,0);
+          vertex(170,-20);
+          vertex(170,-20);
+          vertex(150,0);
+        endShape();
+        textSize(14);
+        text("H4CK 0.95.1", -90,-110); 
+        textSize(13);
+        text(hp + " H4P01NTS", -90,-70); 
+        fill(225);
+        ellipse(-50,-25,40,40);
+        textSize(13);
+        fill(30);
+        text("+ " + round(hp/2), -60,-22); 
+        rotate(-10/57.3);
+        strokeWeight(30);
+        stroke(150);
+        line(30,-100,30,-100);
+        line(30,-70,15,-60);
+        translate(-80,-430 - fingerOffset);
+        strokeWeight(1);
+        fill(30);
+        textSize(30);
+        text("Done",132,400);
+        fill(0,0);
+        rect(130,375,75,30);
+      }
+      finger();
+  }
+
   if (gameState == 0 || gameState == 2) {
     background(225);
-    strokeWeight(10);
-    stroke(30);
-    line(fX,fY,fX,fY);
     fill(30);
-    text("Click anywhere to Start",100,210);
+    textSize(30);
+    text("Start",135,210);
+    text("Help",136,280);
+    textSize(35);
+    text("Floodgate Dungeon",15,150);
+    strokeWeight(1);
+    fill(0,0);
+    rect(130,185,75,30);
+    rect(130,255,75,30);
+    fill(30);
+    textSize(20);
+    text("High score: " + highScore,110,390);
+    finger();
   }
   
   if (gameState == 2) {
     fill(30);
-    text("Score: " + score,100,170);
-    text("High score: " + highScore,100,190);
+    textSize(20);
+    text("Score: " + score,140,370);
   }
     
   if (gameState == 1) {
-    if (waterLevel < 0) {waterLevel = 0;}
     textSize(14);
     background(C2);
-    stroke(30);
-    strokeWeight(1);
-    fill(30);
     if (cutscene > 0) {
       cutsceneAnim();
       cutscene -= 1;
     } else {
-      if (doorMode == 1) {
-        step -= 1/300;
-        waterLevel += 1/10;  
+      stroke(30);
+      strokeWeight(1);
+      fill(30);
+      if (doorMode == 2) {
+        step -= 1/60;
       }
-      if (doorMode == 2) {step -= 1/60;}
       if (fingerOffset > 0) {fingerOffset -= (500/60)};
       if (fingerOffset < 0) {fingerOffset = 0};
       rect(90,90,160,160);
@@ -225,6 +389,7 @@ void draw() {
       vertex(170,-20);
       vertex(150,0);
     endShape();
+    textSize(14);
     text("H4CK 0.95.1", -90,-110); 
     textSize(13);
     text(hp + " H4P01NTS", -90,-70); 
@@ -241,13 +406,14 @@ void draw() {
     translate(-80,-430 - fingerOffset);
     strokeWeight(1);
     finger();
-    if (doorMode == 1) {
-      stroke(0,0,150,50);
-      fill(0,0,150,50);
-      rect(0,420,420, 0 - waterLevel);    
-    }
     checkEndGame();
-    //text(fX + "," + fY,fX,fY);
+    
+    for (int i=pcles.size()-1; i>=0; i--) {
+      Particle p = (Pcle) pcles.get(i);
+      p.update();
+      if (p.fa < 0) {pcles.remove(i);}
+    }
+    //text(mouseX + "," + mouseY,mouseX,mouseY);
   }
   
 }
@@ -262,7 +428,7 @@ void checkEndGame() {
     }
   } 
   if (allCheck >= 36) {
-    hp += round(step);
+    if (doorMode == 1) {hp += round(step*2);} else {hp += round(step);}
     lastColor = cArray[0][0];
     score += 1;
     cutscene = 300;
@@ -284,8 +450,7 @@ void checkEndGame() {
   if(step <= 0 && allCheck < 36) {
     score += hp;
     hp = 0;
-    waterLevel = 0;
-    if (score > highScore) {highScore = score;}
+    if (score > highScore) {$.jStorage.set("fgHighScore", score);}
     gameState = 2;
   }
 }
@@ -293,6 +458,7 @@ void checkEndGame() {
 void switchMode() {
   lastC2 = C2;
   doorMode = chance.pick([0,1,2]);
+  C6 = color(0);
   switch(doorMode) {
   case 0:
     step = round(random(14,19));
@@ -305,11 +471,11 @@ void switchMode() {
   
   case 1:
     step = round(random(16,21));
-    C1 = color(0,255,255);
-    C2 = color(0,204,204);
-    C3 = color(0,153,153);
-    C4 = color(0,102,102);
-    C5 = color(0,51,51);
+    C1 = color(255,255,0);
+    C2 = color(204,204,0);
+    C3 = color(153,153,0);
+    C4 = color(102,102,0);
+    C5 = color(51,51,0);
     break;
   
   case 2:
@@ -329,11 +495,11 @@ void finger() {
   if (fingerPress < 0) {fingerPress = 0};
   fill(150);
   stroke(150);
-  ellipse(fX+30 - (fingerPress - fingerOffset),fY+30 - (fingerPress - fingerOffset),30,30);
-  ellipse(fX+92- (fingerPress - fingerOffset),fY+95- (fingerPress - fingerOffset),30,30);
-  ellipse(fX+112- (fingerPress - fingerOffset),fY+86- (fingerPress - fingerOffset),30,30);
-  ellipse(fX+132- (fingerPress - fingerOffset),fY+85- (fingerPress - fingerOffset),30,30);
-  translate(fX+39- (fingerPress - fingerOffset),fY+79- (fingerPress - fingerOffset));
+  ellipse(mouseX+30 - (fingerPress - fingerOffset),mouseY+30 - (fingerPress - fingerOffset),30,30);
+  ellipse(mouseX+92- (fingerPress - fingerOffset),mouseY+95- (fingerPress - fingerOffset),30,30);
+  ellipse(mouseX+112- (fingerPress - fingerOffset),mouseY+86- (fingerPress - fingerOffset),30,30);
+  ellipse(mouseX+132- (fingerPress - fingerOffset),mouseY+85- (fingerPress - fingerOffset),30,30);
+  translate(mouseX+39- (fingerPress - fingerOffset),mouseY+79- (fingerPress - fingerOffset));
   rotate(1.1);
   rect(-50,-30,100,30);
   rect(49,0,550,-100);
@@ -344,12 +510,10 @@ void finger() {
   stroke(150);
   // rect(49,0,50,-100);
   rotate(-1.1);
-  translate(0 - (fX+57- (fingerPress - fingerOffset)),0 - (fY+79- (fingerPress - fingerOffset)));
+  translate(0 - (mouseX+57- (fingerPress - fingerOffset)),0 - (mouseY+79- (fingerPress - fingerOffset)));
 }
 
 void cutsceneAnim() {
-   if (waterLevel > 0) {waterLevel -= 2;}
-    
   if (cutscene > 200) {
     strokeWeight(1);
     fill(C2);
@@ -461,5 +625,39 @@ void cutsceneAnim() {
         rect(i*(25 - 25*(cutscene/200))+(95 + 75*(cutscene/200)) + sShake[1], j*(25 - 25*(cutscene/200))+(95 + 75*(cutscene/200)) + sShake[3], 25 - 25*(cutscene/200), 25 - 25*(cutscene/200));
       }
     }
+  }
+}
+
+class Pcle {
+  float x;
+  float y;
+  float vx;
+  float vy;
+  float r;
+  float g;
+  float b;
+  float s;
+  float a;
+  float fa;
+ 
+  Pcle(ox,oy,or,og,ob,oa,os) {
+    x = ox;
+    y = oy;
+    r = or;
+    g = og;
+    b = ob;
+    a = oa;
+    s = os;
+  }
+  
+  void update() {
+    fa = a*((x - 250)/170);
+    stroke(r,g,b,fa/2);
+    fill(r,g,b,fa);
+    rect(x - s/2,y - s/2,s,s);
+    vx += random(-1,1);
+    vy -= 0.1;
+    x += vx;
+    y += vy;
   }
 }
