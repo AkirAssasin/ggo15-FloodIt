@@ -197,14 +197,6 @@ void mousePressed() {
   }
 }
 
-void keyPressed() {
-  for(i = 0; i < cArray.length; i++) {
-    for(j = 0; j < cArray[i].length; j++) {
-      cArray[i][j] = cArray[0][0];
-      }
-    }
-}
-
 /* CheckkNeighbor checks to see if any of a cell's 4 adjacent neighbors have 
    a value of true. A neighbor must have a value of true for the cell to change
    color, since the color must be connected to the tree of cells that are connected
