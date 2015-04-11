@@ -25,6 +25,21 @@ color C4 = color(102);
 color C5 = color(51);
 color C6 = color(0);
 
+var bgm = new Howl({
+  urls: ['music/DarkMystery.mp3', 'music/DarkMystery.ogg'],
+  loop: true,
+});
+
+var blip = new Howl({
+  urls: ['music/sfx.mp3', 'music/sfx.ogg'],
+  loop: false,
+});
+
+var door = new Howl({
+  urls: ['music/door.mp3', 'music/door.ogg'],
+  loop: false,
+});
+
 color lastC2;
 
 // Checks whether a number is between a range to simplify code
@@ -34,7 +49,7 @@ Number.prototype.between = function (min, max) {
 
 void setup() {
   size(340, 420);
-  
+  bgm.play();
   pcles = new ArrayList();
     
   int b, i, j;
@@ -88,6 +103,7 @@ void mousePressed() {
   if (gameState == 3) {
     if (mouseX.between(130,205) && mouseY.between(375,450) && tutLevel == 1){gameState = 0;}
     fingerPress = 30;
+    blip.play();
     if (tutLevel == 0 && mouseX.between(95,245) && mouseY.between(95,245)) {
       color c, f;   
         
@@ -130,7 +146,7 @@ void mousePressed() {
     }
   }
   if (gameState == 1) {
-    
+    blip.play();
     fingerPress = 30;
     if (dist(mouseX,mouseY,53,395) < 40) {
         step += round(hp/2);
@@ -432,6 +448,7 @@ void checkEndGame() {
     lastColor = cArray[0][0];
     score += 1;
     cutscene = 300;
+    door.play();
     sShake[0] = 0;
     sShake[1] = 0;
     sShake[2] = 0;
